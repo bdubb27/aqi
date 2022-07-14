@@ -1,16 +1,28 @@
 services:
   aqi-client:
-    build: ../air-quality-info
+    build:
+      context: ../air-quality-info
+      target: base
+    command: yarn start
     depends_on:
       - airnow-server
-# the key=value without quotes syntax below is per spec as of nginx v1.19
+    ports:
+      - "3001:3000"
+    volumes:
+      - ../air-quality-info:/app
+    working_dir: /app
+
+  nginx:
+    image: nginx:1.23.0-alpine
     environment:
+      - NGINX_CLIENT_HOST=aqi-client
+      - NGINX_CLIENT_PORT=3000
       - NGINX_API_HOST=airnow-server
       - NGINX_API_PORT=3000
     ports:
       - "80:80"
     volumes:
-      - ./nginx:/etc/nginx/templates
+      - ./nginx/dev.conf.template:/etc/nginx/templates/default.conf.template
 
   airnow-server:
     build: ../airnow-server
