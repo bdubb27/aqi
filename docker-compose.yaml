@@ -31,6 +31,10 @@ services:
       MYSQL_USER_FILE: /run/secrets/MYSQL_USER
       MYSQL_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD
       MYSQL_DATABASE: aqi
+# ports are needed to connect from host machine (e.g. DbVis)
+# 127.0.0.1 isn't required, but does help ensure host machine port is free
+    ports:
+      - "127.0.0.1:3306:3306"
     secrets:
       - MYSQL_USER
       - MYSQL_PASSWORD
