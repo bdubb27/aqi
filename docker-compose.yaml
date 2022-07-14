@@ -1,6 +1,6 @@
 services:
   aqi-client:
-    build: https://github.com/bdubb27/air-quality-info.git#docker
+    build: ../air-quality-info
     depends_on:
       - airnow-server
 # the key=value without quotes syntax below is per spec as of nginx v1.19
@@ -13,7 +13,7 @@ services:
       - ./nginx:/etc/nginx/templates
 
   airnow-server:
-    build: https://github.com/bdubb27/airnow-server.git#docker
+    build: ../airnow-server
     depends_on:
       - mysql
     environment:
