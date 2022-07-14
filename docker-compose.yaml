@@ -1,0 +1,52 @@
+services:
+  aqi-client:
+    build: https://github.com/bdubb27/air-quality-info.git#docker
+    depends_on:
+      - airnow-server
+# the key=value without quotes syntax below is per spec as of nginx v1.19
+    environment:
+      - NGINX_API_HOST=airnow-server
+      - NGINX_API_PORT=3000
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/templates
+
+  airnow-server:
+    build: https://github.com/bdubb27/airnow-server.git#docker
+    depends_on:
+      - mysql
+    environment:
+      PORT: "3000"
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: aqi
+    secrets:
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+
+  mysql:
+    image: mysql:8.0.29
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+      MYSQL_USER_FILE: /run/secrets/MYSQL_USER
+      MYSQL_PASSWORD_FILE: /run/secrets/MYSQL_PASSWORD
+      MYSQL_DATABASE: aqi
+# ports are needed to connect from host machine (e.g. DbVis)
+# 127.0.0.1 isn't required, but does help ensure host machine port is free
+    ports:
+      - "127.0.0.1:3306:3306"
+    secrets:
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+    volumes:
+      - aqi-mysql-data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d/
+
+secrets:
+  MYSQL_USER:
+    file: ./secrets/MYSQL_USER
+  MYSQL_PASSWORD:
+    file: ./secrets/MYSQL_PASSWORD
+
+volumes:
+  aqi-mysql-data:
