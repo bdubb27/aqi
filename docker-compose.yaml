@@ -12,7 +12,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/dev.conf.template:/etc/nginx/templates/default.conf.template
+      - ./nginx/:/etc/nginx/templates/
 
   aqi-client:
     build:
