@@ -36,7 +36,8 @@ services:
       - MYSQL_PASSWORD
     volumes:
       - aqi-mysql-data:/var/lib/mysql
-      - ./sql:/docker-entrypoint-initdb.d/
+      - ./sql:/docker-entrypoint-initdb.d
+      - ./csv:/var/lib/mysql-files
 
 secrets:
   MYSQL_USER:
